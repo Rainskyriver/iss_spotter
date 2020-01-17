@@ -8,7 +8,7 @@ const fetchMyIP = function(callback) {
     }
 
     if (response.statusCode !== 200) {
-      const msg = `Status Code ${response.statusCode} when fetching IP. Response ${body}`;
+      const msg = `Status Code: ${response.statusCode} when fetching IP. Response ${body}`;
       callback(Error(msg), null);
       return;
     }
@@ -19,7 +19,24 @@ const fetchMyIP = function(callback) {
 };
 
 const fetchCoordsByIP = function(ip, callback) {
-  
-}
+  request("https://ipvigilante.com/json/" + ip, "utf8", (error, response, body) => {
+    if (error) {
+      callback(error, null);
+      return;
+    }
+    if (response.statusCode !== 200) {
+      const msg = `Status Code: ${response.statusCode} when fetching coords. Response ${body}`;
+      callback(Error(msg), null);
+      return;
+    }
+    const newBody = JSON.parse(body);
+    const data = newBody.data;
+    const latLong = {
+      latitude: data.latitude,
+      longitude: data.longitude
+    };
+    callback(null, latLong);
+  });
+};
 
 module.exports = { fetchMyIP, fetchCoordsByIP };
